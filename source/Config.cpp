@@ -12,7 +12,7 @@ Config::~Config() {
 
 void Config::Load(const char *res_dir) {
 	char cfg_file[MAX_PATH];
-	sprintf_(cfg_file, "%s\\config.cfg", res_dir);
+	sprintf_(cfg_file, "%s%sconfig.cfg", res_dir, PATH_SEPERATOR);
 
 	if (File_LoadText(cfg_file, mBuffer, sizeof(mBuffer)) > 0) {
 

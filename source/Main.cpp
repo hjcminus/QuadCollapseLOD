@@ -274,7 +274,9 @@ int main(int argc, char **argv) {
 	Str_ExtractDirSelf(res_dir);
 	Str_ExtractDirSelf(res_dir);
 	Str_ExtractDirSelf(res_dir);
-	strcat_(res_dir, "\\res");
+	Str_ExtractDirSelf(res_dir);
+	strcat_(res_dir, PATH_SEPERATOR);
+	strcat_(res_dir, "res");
 
 	Config config_file;
 	config_file.Load(res_dir);
@@ -291,10 +293,10 @@ int main(int argc, char **argv) {
 	cfg.mCameraPitch = config_file.GetAsFloat("CameraPitch", 0.0f);
 	cfg.mResDir = res_dir;
 	cfg.mSkyboxDir = config_file.GetAsString("SkyboxDir", "skybox");
-	cfg.mTerrainHeight = config_file.GetAsString("TerrainHeight", "terrain\\gcanyon_height_2k2k.bmp");
+	cfg.mTerrainHeight = config_file.GetAsString("TerrainHeight", "terrain" PATH_SEPERATOR "gcanyon_height_2k2k.bmp");
 	cfg.mTerrainZScale = config_file.GetAsFloat("TerrainZScale", 1.0f);
-	cfg.mTerrainBase = config_file.GetAsString("TerrainBase", "terrain\\gcanyon_color_2k2k.bmp");
-	cfg.mTerrainDetail = config_file.GetAsString("TerrainDetail", "terrain\\detail.bmp");
+	cfg.mTerrainBase = config_file.GetAsString("TerrainBase", "terrain" PATH_SEPERATOR "gcanyon_color_2k2k.bmp");
+	cfg.mTerrainDetail = config_file.GetAsString("TerrainDetail", "terrain" PATH_SEPERATOR "detail.bmp");
 	cfg.mBackgroundColor = config_file.GetAsVec3("BackgroundColor", vec3(0.0f));
 	cfg.mWireframeColor = config_file.GetAsVec3("WireframeColor", vec3(0.0f));
 	cfg.mFogColor = config_file.GetAsVec3("FogColor", vec3(0.0f));

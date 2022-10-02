@@ -44,7 +44,7 @@ bool RenderText::Init(const config_s &cfg) {
 		return false;
 	}
 
-	mFontTexture = GL_CreateTexture2D(cfg.mResDir, "font\\font.bmp", true, true);
+	mFontTexture = GL_CreateTexture2D(cfg.mResDir, "font" PATH_SEPERATOR "font.bmp", true, true);
 	if (!mFontTexture) {
 		return false;
 	}
