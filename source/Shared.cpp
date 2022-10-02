@@ -113,8 +113,8 @@ static char * RFindSlash(char *s) {
 void Str_EraseDoubleDots(char *s) {
 	char sl[2][MAX_PATH];
 
-	strcpy_s(sl[0], s);
-	strcpy_s(sl[1], s);
+	strcpy_(sl[0], s);
+	strcpy_(sl[1], s);
 
 	int srcidx = 0;
 	int dstidx = 1 - srcidx;
@@ -130,8 +130,8 @@ void Str_EraseDoubleDots(char *s) {
 			char * pc2 = RFindSlash(sl[srcidx]);
 			if (pc2) {
 				pc2[1] = 0;
-				strcpy_s(sl[dstidx], sl[srcidx]);
-				strcat_s(sl[dstidx], pc + 3);
+				strcpy_(sl[dstidx], sl[srcidx]);
+				strcat_(sl[dstidx], pc + 3);
 
 				srcidx = 1 - srcidx;
 				dstidx = 1 - srcidx;
@@ -148,7 +148,13 @@ void Str_EraseDoubleDots(char *s) {
 		}
 	}
 
+#if defined(_MSC_VER)
 	strcpy_s(s, MAX_PATH, sl[srcidx]);
+#endif
+
+#if defined(__GNUC__)
+	strcpy(s, sl[srcidx]);
+#endif
 }
 
 void Str_ExtractDirSelf(char *s) {
@@ -163,7 +169,14 @@ void Str_ExtractDirSelf(char *s) {
 }
 
 void Str_ExtractExeDir(const char *exe, char *dir, int dir_size) {
+#if defined(_MSC_VER)
 	strcpy_s(dir, dir_size, exe);
+#endif
+
+#if defined(__GNUC__)
+	strcpy(dir, exe);
+#endif
+
 	Str_EraseDoubleDots(dir);
 	Str_ExtractDirSelf(dir);
 }
@@ -178,19 +191,31 @@ static sys_error_output_proc_t gErrorOutput;
 void Sys_Error(const char *file, int line, const char *fmt, ...) {
 	char buffer[4096];
 
-	sprintf_s(buffer, "file: %s\nline: %d\n", file, line);
+	sprintf_(buffer, "file: %s\nline: %d\n", file, line);
 	int len = (int)strlen(buffer);
 
 	va_list argptr;
 	va_start(argptr, fmt);
+#if defined(_MSC_VER)
 	vsprintf_s(buffer + len, 4096 - len, fmt, argptr);
+#endif
+
+#if defined(__GNUC__)
+	vsprintf(buffer + len, fmt, argptr);
+#endif
 	va_end(argptr);
 
 	if (gErrorOutput) {
 		gErrorOutput(buffer);
 	}
 	else {
+#if defined(_MSC_VER)
 		fprintf_s(stderr, "%s", buffer);
+#endif
+
+#if defined(__GNUC__)
+	fprintf(stderr, "%s", buffer);
+#endif
 	}
 }
 
@@ -212,11 +237,27 @@ int FileSize(FILE * f) {
 	return size;
 }
 
+FILE * File_Open(const char * filename, const char * mod) {
+#if defined(_MSC_VER)
+	FILE * f = nullptr;
+	if (fopen_s(&f, filename, mod) == 0) {
+		return f;
+	}
+	else {
+		return nullptr;
+	}
+#endif
+
+#if defined(__GNUC__)
+	return fopen(filename, mod);
+#endif
+}
+
 int	File_GetSize(const char * filename) {
 	int size = 0;
 
-	FILE * f = nullptr;
-	if (fopen_s(&f, filename, "rb") == 0) {
+	FILE * f = File_Open(filename, "rb");
+	if (f) {
 		size = FileSize(f);
 		fclose(f);
 	}
@@ -227,8 +268,8 @@ int	File_GetSize(const char * filename) {
 int	File_LoadText(const char * filename, char *buffer, int buffer_size) {
 	int read = 0;
 
-	FILE * f = nullptr;
-	if (fopen_s(&f, filename, "rb") == 0) {
+	FILE * f = File_Open(filename, "rb");
+	if (f) {
 		int size = FileSize(f);
 		if ((size + 1) <= buffer_size) {
 			read = (int)fread(buffer, 1, (size_t)size, f);
@@ -243,8 +284,8 @@ int	File_LoadText(const char * filename, char *buffer, int buffer_size) {
 int	File_LoadBinary(const char * filename, char *buffer, int buffer_size) {
 	int read = 0;
 
-	FILE * f = nullptr;
-	if (fopen_s(&f, filename, "rb") == 0) {
+	FILE * f = File_Open(filename, "rb");
+	if (f) {
 		int size = FileSize(f);
 		if (size <= buffer_size) {
 			read = (int)fread(buffer, 1, (size_t)size, f);
@@ -665,7 +706,14 @@ static GLuint CreateShader(const char *filename, GLenum type) {
 		GLint log_len = 0;
 		glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &log_len);
 		if (log_len) {
+#if defined(_MSC_VER)
 			char * buf = (char*)_alloca(log_len);
+#endif
+
+#if defined(__GNUC__)
+			char * buf = (char*)malloc(log_len);
+			memset(buf, 0, log_len);
+#endif
 			glGetShaderInfoLog(shader, log_len, &log_len, buf);
 			SYS_ERROR("shader compile error: %s\n", buf);
 		}
@@ -712,7 +760,14 @@ bool GL_CreateProgram(const gl_shader_desc_s &desc, gl_program_s &program) {
 		GLint log_len = 0;
 		glGetProgramiv(program.mProgram, GL_INFO_LOG_LENGTH, &log_len);
 		if (log_len) {
+#if defined(_MSC_VER)
 			char * buf = (char*)_alloca(log_len);
+#endif
+
+#if defined(__GNUC__)
+			char * buf = (char*)malloc(log_len);
+			memset(buf, 0, log_len);
+#endif
 			glGetProgramInfoLog(program.mProgram, log_len, &log_len, buf);
 			SYS_ERROR("program link error: %s\n", buf);
 		}
@@ -726,8 +781,8 @@ bool GL_CreateProgram(const char *res_dir, const char * vs, const char *fs, gl_p
 	char vsfilename[MAX_PATH];
 	char fsfilename[MAX_PATH];
 
-	sprintf_s(vsfilename, "%s\\shaders\\%s", res_dir, vs);
-	sprintf_s(fsfilename, "%s\\shaders\\%s", res_dir, fs);
+	sprintf_(vsfilename, "%s%sshaders%s%s", res_dir, PATH_SEPERATOR, PATH_SEPERATOR, vs);
+	sprintf_(fsfilename, "%s%sshaders%s%s", res_dir, PATH_SEPERATOR, PATH_SEPERATOR, fs);
 
 	gl_shader_desc_s shader_desc;
 
@@ -781,7 +836,7 @@ GLuint GL_CreateTexture2D(const gl_texture2d_desc_s &desc) {
 
 GLuint GL_CreateTexture2D(const char *res_dir, const char * filename, bool mipmap, bool repeat) {
 	char fullfilename[MAX_PATH];
-	sprintf_s(fullfilename, "%s\\%s", res_dir, filename);
+	sprintf_(fullfilename, "%s%s%s", res_dir, PATH_SEPERATOR, filename);
 
 	gl_texture2d_desc_s tex2d_desc;
 

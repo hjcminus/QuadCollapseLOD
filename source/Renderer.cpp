@@ -104,7 +104,7 @@ void Renderer::Printf(const char *fmt, ...) {
 
 	va_list argptr;
 	va_start(argptr, fmt);
-	vsprintf_s(buffer, fmt, argptr);
+	vsprintf_(buffer, fmt, argptr);
 	va_end(argptr);
 
 	mTextOutput->Print(buffer);

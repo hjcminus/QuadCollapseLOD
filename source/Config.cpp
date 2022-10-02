@@ -12,7 +12,7 @@ Config::~Config() {
 
 void Config::Load(const char *res_dir) {
 	char cfg_file[MAX_PATH];
-	sprintf_s(cfg_file, "%s\\config.cfg", res_dir);
+	sprintf_(cfg_file, "%s\\config.cfg", res_dir);
 
 	if (File_LoadText(cfg_file, mBuffer, sizeof(mBuffer)) > 0) {
 
@@ -97,7 +97,7 @@ vec3 Config::GetAsVec3(const char *key, const vec3 &default_) const {
 	if (p) {
 
 		char buffer[1024] = { 0 };
-		strcpy_s(buffer, p->mValue);
+		strcpy_(buffer, p->mValue);
 
 		float v[3] = { 0.0f };
 		int i = 0;

@@ -113,7 +113,7 @@ bool Skybox::Init(const config_s &cfg) {
 	const char * FILES[] = { "lf.bmp", "ft.bmp", "rt.bmp", "bk.bmp", "tp.bmp", "bt.bmp" };
 	for (int i = 0; i < 6; ++i) {
 		char filename[MAX_PATH];
-		sprintf_s(filename, "%s\\%s", cfg.mSkyboxDir, FILES[i]);
+		sprintf_(filename, "%s%s%s", cfg.mSkyboxDir, PATH_SEPERATOR, FILES[i]);
 		mTextures[i] = GL_CreateTexture2D(cfg.mResDir, filename, true, false);
 		if (!mTextures[i]) {
 			return false;

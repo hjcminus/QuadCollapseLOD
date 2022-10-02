@@ -7,7 +7,13 @@ main entrance, base on GLUT framework
 // GLUT Framework
 #include <GL/freeglut.h>
 
-#include <GL/wglew.h>
+#if defined(_WIN32)
+# include <GL/wglew.h>
+#endif
+
+#if defined(__linux__)
+# include <GL/glew.h>
+#endif
 
 #include <chrono>
 
@@ -206,10 +212,12 @@ static void OnKeyboardUp(unsigned char key, int x, int y) {
 static void OnDisplay() {
 	gDemoApp.UpdateScreen(gDrawFlags);
 
+#if defined(_WIN32)
 	// v-sync
 	if (wglSwapIntervalEXT) {
 		wglSwapIntervalEXT(1);
 	}
+#endif
 
 	glutSwapBuffers();
 }
@@ -238,12 +246,23 @@ static void OnClose() {
 }
 
 static void ErrorOutput(const char *text) {
+#if defined(_WIN32)
 	MessageBoxA(NULL, text, "Error", MB_OK);
+#endif
+
+#if defined(__linux__)
+	printf("%s\n", text);
+#endif
 }
 
 int main(int argc, char **argv) {
-#ifdef _DEBUG // detect memory leak
+
+#if defined(_WIN32)
+
+# ifdef _DEBUG // detect memory leak
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+# endif
+
 #endif
 
 	Sys_SetErrorOutputProc(ErrorOutput);
@@ -255,7 +274,7 @@ int main(int argc, char **argv) {
 	Str_ExtractDirSelf(res_dir);
 	Str_ExtractDirSelf(res_dir);
 	Str_ExtractDirSelf(res_dir);
-	strcat_s(res_dir, "\\res");
+	strcat_(res_dir, "\\res");
 
 	Config config_file;
 	config_file.Load(res_dir);
@@ -339,7 +358,7 @@ int main(int argc, char **argv) {
 		"\"Page Down\" to decrease move speed\n"
 		"\"ESC\" can quit program\n";
 
-	printf(HINT);
+	printf("%s", HINT);
 
 	gFrame.mPriorTime = Sys_GetRelativeTime();
 

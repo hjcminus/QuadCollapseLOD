@@ -66,13 +66,13 @@ void DemoApp::UpdateCameraOrientation() {
 	// update rotation
 	mat4 yawMatrix = rotate(mat4(1.0f), mYaw * PI / 180.0f, START_UP);
 
-	mCameraForward = (yawMatrix * vec4(START_FORWARD, 0.0f)).xyz;
-	mCameraRight = (yawMatrix * vec4(START_RIGHT, 0.0f)).xyz;
+	mCameraForward = (yawMatrix * vec4(START_FORWARD, 0.0f)).xyz();
+	mCameraRight = (yawMatrix * vec4(START_RIGHT, 0.0f)).xyz();
 
 	mat4 pitchMatrix = rotate(mat4(1.0f), mPitch * PI / 180.0f, mCameraRight);
 
-	mCameraForward = (pitchMatrix * vec4(mCameraForward, 0.0f)).xyz;
-	mCamera.mUp = (pitchMatrix * vec4(START_UP, 0.0f)).xyz;
+	mCameraForward = (pitchMatrix * vec4(mCameraForward, 0.0f)).xyz();
+	mCamera.mUp = (pitchMatrix * vec4(START_UP, 0.0f)).xyz();
 
 	mCameraForward = normalize(mCameraForward);
 	mCameraRight = normalize(mCameraRight);

@@ -9,6 +9,8 @@ shared data type & function
 #include <string.h>
 #include <assert.h>
 
+#if defined(_WIN32)
+
 // memory
 #ifdef _DEBUG
 # define _CRTDBG_MAP_ALLOC
@@ -18,6 +20,32 @@ shared data type & function
 #else
 # define	NEW__				new
 #endif
+
+# define	PATH_SEPERATOR		"\\"
+
+#endif
+
+#if defined(__linux__)
+# define	NEW__				new
+# define	PATH_SEPERATOR		"/"
+#endif
+
+#if defined(_MSC_VER)
+# define	strcpy_				strcpy_s
+# define	strcat_				strcat_s
+# define	sprintf_			sprintf_s
+# define	vsprintf_			vsprintf_s
+# define	fprintf_			fprintf_s
+#endif
+
+#if defined(__GNUC__)
+# define	strcpy_				strcpy
+# define	strcat_				strcat
+# define	sprintf_			sprintf
+# define	vsprintf_			vsprintf
+# define	fprintf_			fprintf
+#endif
+
 
 // OpenGL
 #include <GL/glew.h>
@@ -308,7 +336,14 @@ void	Str_ExtractExeDir(const char *exe, char *dir, int dir_size);
 hints
 ================================================================================
 */
-#define	SYS_ERROR(fmt, ...)		Sys_Error(__FILE__, __LINE__, fmt, __VA_ARGS__)
+
+#if defined(_MSC_VER)
+# define	SYS_ERROR(fmt, ...)		Sys_Error(__FILE__, __LINE__, fmt, __VA_ARGS__)
+#endif
+
+#if defined(__GNUC__)
+# define	SYS_ERROR(fmt, ...)		Sys_Error(__FILE__, __LINE__, fmt, ##__VA_ARGS__)
+#endif
 
 void	Sys_Error(const char *file, int line, const char *fmt, ...);
 
@@ -321,6 +356,7 @@ void	Sys_SetErrorOutputProc(sys_error_output_proc_t proc);
 file
 ================================================================================
 */
+FILE *	File_Open(const char * filename, const char * mod);
 int		File_GetSize(const char * filename);
 int		File_LoadText(const char * filename, char *buffer, int buffer_size);
 int		File_LoadBinary(const char * filename, char *buffer, int buffer_size);

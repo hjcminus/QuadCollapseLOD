@@ -20,7 +20,7 @@ bool Terrain::Init(const config_s &cfg) {
 	}
 
 	char fullfilename[MAX_PATH];
-	sprintf_s(fullfilename, "%s\\%s", cfg.mResDir, cfg.mTerrainHeight);
+	sprintf_(fullfilename, "%s%s%s", cfg.mResDir, PATH_SEPERATOR, cfg.mTerrainHeight);
 
 	height_field_s hf;
 	if (!File_LoadRawHeightFieldFrom8BitBMP(fullfilename, hf)) {
