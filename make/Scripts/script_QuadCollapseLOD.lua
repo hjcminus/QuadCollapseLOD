@@ -4,7 +4,7 @@ require ("script_extension")
 require ("script_configuration")
 
 --------------------------------------------------------------------------------
--- quake2 workspace --
+-- QuadCollapseLOD workspace --
 --------------------------------------------------------------------------------
 
 if is_linux then

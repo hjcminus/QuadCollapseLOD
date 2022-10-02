@@ -5,4 +5,4 @@
 TargetParentPath = "bin"
 ObjParentPath = "intermediate"
 ImpLibParentPath = "lib"
-WorkspaceName = "quake2"
+WorkspaceName = "QuadCollapseLOD"
