@@ -21,17 +21,22 @@ void Config::Load(const char *res_dir) {
 			// extract line
 			char * line = pc;
 
-			while (*pc && *pc != 13) {
+			while (*pc && (*pc != '\r' && * pc != '\n')) {
 				pc++;
 			}
 
-			char line_break = *pc;
-			if (*pc) {
+			if (*pc == '\r') {
 				*pc = 0;
+				pc++;
+			}
+
+			while (*pc == '\r' || *pc == '\n') {
+				*pc = 0;
+				pc++;
 			}
 
 			// parse line
-			if (*line != 13) { // not a blank line
+			if (*line && *line != '\r' && *line != '\n') { // not a blank line
 				char * temp_key = line;
 				char * temp_value = strchr(line, '=');
 				if (temp_value) {
@@ -46,16 +51,6 @@ void Config::Load(const char *res_dir) {
 						pair->mNext = mPairs;
 					}
 					mPairs = pair;
-				}
-			}
-
-			// skip 10
-			*pc = line_break;
-			if (*pc) {
-				*pc = 0;
-				pc++;
-				while (10 == *pc) {
-					pc++;
 				}
 			}
 		}

@@ -659,8 +659,11 @@ bool GL_Init() {
 		return false;
 	}
 
-	if (!glewIsSupported("GL_VERSION_4_3")) {
-		SYS_ERROR("requre OpenGL 4.3 and above\n");
+	const char * s = (const char *)glGetString(GL_VENDOR);
+	printf("RENDER: %s\n", s);
+
+	if (!glewIsSupported("GL_VERSION_4_5")) {
+		SYS_ERROR("requre OpenGL 4.5 and above to support glBindTextureUnit\n");
 		return false;
 	}
 
