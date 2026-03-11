@@ -22,6 +22,7 @@ bool DemoApp::Init(const config_s &cfg) {
 	mTerrain = NEW__ Terrain();
 
 	if (!mRenderer->Init(cfg)) {
+		printf("init renderer error\n");
 		return false;
 	}
 

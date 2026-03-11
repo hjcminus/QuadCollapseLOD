@@ -268,15 +268,23 @@ int main(int argc, char **argv) {
 	Sys_SetErrorOutputProc(ErrorOutput);
 	Sys_InitTimer();
 
+	// printf("argv[0] = \"%s\"\n", argv[0]);
+
 	// get res directory path
 	char res_dir[MAX_PATH];
 	Str_ExtractExeDir(argv[0], res_dir, MAX_PATH);
-	Str_ExtractDirSelf(res_dir);
-	Str_ExtractDirSelf(res_dir);
-	Str_ExtractDirSelf(res_dir);
-	Str_ExtractDirSelf(res_dir);
-	strcat_(res_dir, PATH_SEPERATOR);
-	strcat_(res_dir, "res");
+
+#if defined(_WIN32)
+	strcat_(res_dir, "\\..\\..\\..\\..\\res");
+#endif
+
+#if defined(__linux__)
+	strcat_(res_dir, "/../../../../res");
+#endif
+
+	Str_EraseDoubleDots(res_dir);
+
+	// printf("res_dir = \"%s\"\n", res_dir);
 
 	Config config_file;
 	config_file.Load(res_dir);

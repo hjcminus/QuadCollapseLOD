@@ -22,6 +22,7 @@ Renderer::~Renderer() {
 bool Renderer::Init(const config_s &cfg) {
 	mUniformBuffer = NEW__ UniformBuffers();
 	if (!mUniformBuffer->Init()) {
+		printf("init uniform buffer error\n");
 		return false;
 	}
 
@@ -31,16 +32,19 @@ bool Renderer::Init(const config_s &cfg) {
 
 	mSkybox = NEW__ Skybox();
 	if (!mSkybox->Init(cfg)) {
+		printf("init skybox error\n");
 		return false;
 	}
 
 	mTerrain = NEW__ RenderTerrain();
 	if (!mTerrain->Init(cfg)) {
+		printf("init terrain error\n");
 		return false;
 	}
 
 	mTextOutput = NEW__ RenderText();
 	if (!mTextOutput->Init(cfg)) {
+		printf("init text output error\n");
 		return false;
 	}
 

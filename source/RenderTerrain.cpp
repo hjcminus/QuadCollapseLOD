@@ -36,11 +36,13 @@ bool RenderTerrain::Init(const config_s &cfg) {
 
 	mBaseTexture = GL_CreateTexture2D(cfg.mResDir, cfg.mTerrainBase, true, true);
 	if (!mBaseTexture) {
+		printf("could not load base texture \"%s\"\n", cfg.mTerrainBase);
 		return false;
 	}
 
 	mDetailTexture = GL_CreateTexture2D(cfg.mResDir, cfg.mTerrainDetail, true, true);
 	if (!mDetailTexture) {
+		printf("could not load detail texture \"%s\"\n", cfg.mTerrainDetail);
 		return false;
 	}
 

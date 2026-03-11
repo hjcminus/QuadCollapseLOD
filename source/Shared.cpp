@@ -113,6 +113,18 @@ static char * RFindSlash(char *s) {
 void Str_EraseDoubleDots(char *s) {
 	char sl[2][MAX_PATH];
 
+	if (s[0] == '.' && (s[1] == '\\' || s[1] == '/')) {
+		return;	// start from current directory
+	}
+
+	bool end_with_double_dots = false;
+	int l = (int)strlen(s);
+	if (l >= 2 && s[l - 1] == '.' && s[l - 2] == '.') {
+		end_with_double_dots = true;
+		s[l] = '/';	// add a '/
+		s[l + 1] = '\0';
+	}
+
 	strcpy_(sl[0], s);
 	strcpy_(sl[1], s);
 
@@ -134,7 +146,7 @@ void Str_EraseDoubleDots(char *s) {
 				strcat_(sl[dstidx], pc + 3);
 
 				srcidx = 1 - srcidx;
-				dstidx = 1 - srcidx;
+				dstidx = 1 - dstidx;
 
 				pc = FindDoubleDots(sl[srcidx]);
 			}
@@ -155,6 +167,13 @@ void Str_EraseDoubleDots(char *s) {
 #if defined(__GNUC__)
 	strcpy(s, sl[srcidx]);
 #endif
+
+	if (end_with_double_dots) {
+		l = (int)strlen(s);
+		if (l && (s[l - 1] == '/' || s[l - 1] == '\\')) {
+			s[l - 1] = '\0';
+		}
+	}
 }
 
 void Str_ExtractDirSelf(char *s) {
@@ -166,11 +185,29 @@ void Str_ExtractDirSelf(char *s) {
 	if (pc) {
 		*pc = 0;
 	}
+	else {
+		// current directory
+		s[0] = '.';
+		s[1] = 0;
+	}
 }
 
 void Str_ExtractExeDir(const char *exe, char *dir, int dir_size) {
 #if defined(_MSC_VER)
-	strcpy_s(dir, dir_size, exe);
+	if (!strchr(exe, ':')) {
+		// relative path
+		if (exe[0] != '.') {
+			dir[0] = '.';
+			dir[1] = '\\';
+			strcpy_s(dir + 2, dir_size - 2, exe);
+		}
+		else {
+			strcpy_s(dir, dir_size, exe);
+		}
+	}
+	else {
+		strcpy_s(dir, dir_size, exe);
+	}
 #endif
 
 #if defined(__GNUC__)
@@ -740,6 +777,7 @@ bool GL_CreateProgram(const gl_shader_desc_s &desc, gl_program_s &program) {
 		if (filename) {
 			GLuint shader = CreateShader(filename, TO_GL_SHADER[s]);
 			if (!shader) {
+				printf("create shader \"%s\" error\n", filename);
 				return false;
 			}
 
